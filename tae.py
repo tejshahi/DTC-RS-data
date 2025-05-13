@@ -4,10 +4,9 @@ from keras.layers import Input, Conv1D, LeakyReLU, MaxPool1D, LSTM, Bidirectiona
 from keras.layers import UpSampling2D, Conv2DTranspose
 from keras.optimizers import Adam
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import LabelEncoder
 
-
-
-def temporal_autoencoder(input_dim, timesteps, n_filters=50, kernel_size=10, strides=1, pool_size=10, n_units=[50, 1]):
+def temporal_autoencoder(input_dim, timesteps, n_filters=32, kernel_size=10, strides=1, pool_size=3, n_units=[50, 1]):
     """
     Temporal Autoencoder (TAE) model with Convolutional and BiLSTM layers.
 
@@ -32,9 +31,9 @@ def temporal_autoencoder(input_dim, timesteps, n_filters=50, kernel_size=10, str
     x = Conv1D(filters=n_filters, kernel_size=kernel_size, strides=strides, padding='same', activation='linear')(x_input)
     x = LeakyReLU()(x)
     x = MaxPool1D(pool_size=pool_size)(x)
-    x = Bidirectional(LSTM(n_units[0], return_sequences=True), merge_mode='concat')(x)
+    x = LSTM(n_units[0], return_sequences=True)(x)
     x = LeakyReLU()(x)
-    x = Bidirectional(LSTM(n_units[1], return_sequences=True), merge_mode='concat')(x)
+    x = LSTM(n_units[1], return_sequences=True)(x)
     x = LeakyReLU(name='latent')(x)
 
     # Decoder
